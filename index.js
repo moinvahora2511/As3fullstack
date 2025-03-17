@@ -85,7 +85,14 @@ app.post('/login', async (req, res) => {
 
     try {
         const user = await DriveTest.findOne({ username });
-        if (!user || !(await user.comparePassword(password))) {
+
+        if (!user) {
+            return res.render('login', { pageHeading: 'Login', errorMessage: 'Invalid username or password' });
+        }
+
+        const isMatch = await user.comparePassword(password);
+
+        if (!isMatch) {
             return res.render('login', { pageHeading: 'Login', errorMessage: 'Invalid username or password' });
         }
 
@@ -104,6 +111,7 @@ app.post('/login', async (req, res) => {
 });
 
 
+
 app.get('/g2test', requireDriver, async (req, res) => {
     const user = await DriveTest.findById(req.session.userId);
     res.render('g2test', { pageHeading: 'G2 Test', user, message: '' });
@@ -113,17 +121,23 @@ app.post('/g2test/submit', requireDriver, async (req, res) => {
     const { firstName, lastName, licenceNumber, age, 'carDetails[make]': make, 'carDetails[model]': model, 'carDetails[year]': year, 'carDetails[plateNumber]': plateNumber } = req.body;
 
     try {
-        const user = await DriveTest.findById(req.session.userId);
-        user.firstName = firstName || user.firstName;
-        user.lastName = lastName || user.lastName;
-        user.licenceNumber = licenceNumber || user.licenceNumber; 
-        user.age = age || user.age;
-        user.carDetails.make = make || user.carDetails.make;
-        user.carDetails.model = model || user.carDetails.model;
-        user.carDetails.year = year || user.carDetails.year;
-        user.carDetails.plateNumber = plateNumber || user.carDetails.plateNumber;
+        const user = await DriveTest.findByIdAndUpdate(
+            req.session.userId,
+            {
+                firstName: firstName || user.firstName,
+                lastName: lastName || user.lastName,
+                licenceNumber: licenceNumber || user.licenceNumber,
+                age: age || user.age,
+                carDetails: {
+                    make: make || user.carDetails.make,
+                    model: model || user.carDetails.model,
+                    year: year || user.carDetails.year,
+                    plateNumber: plateNumber || user.carDetails.plateNumber
+                }
+            },
+            { new: true }  
+        );
 
-        await user.save();
         res.render('g2test', { pageHeading: 'G2 Test', user, message: 'Booking successfully updated!' });
     } catch (err) {
         console.error('Error updating booking:', err);
@@ -133,8 +147,17 @@ app.post('/g2test/submit', requireDriver, async (req, res) => {
 
 
 app.get('/gtest', requireDriver, async (req, res) => {
-    const user = await DriveTest.findById(req.session.userId);
-    res.render('gtest', { pageHeading: 'G Test', user });
+    try {
+        const user = await DriveTest.findById(req.session.userId);  
+        if (!user) {
+            return res.redirect('/login');
+        }
+
+        res.render('gtest', { pageHeading: 'G Test', user }); 
+    } catch (err) {
+        console.error('Error fetching user data:', err);
+        res.status(500).send('Error fetching user data');
+    }
 });
 
 app.get('/logout', (req, res) => {
