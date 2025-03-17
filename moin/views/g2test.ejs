@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>G2 Test - DriveTest Booking</title>
+    <link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <%- include('layouts/navbar'); %>
+    <%- include('layouts/header'); %>
+
+    <main class="mb-4">
+        <div class="bookg2txt">
+            <h2 class="fw-bold">Book Your G2 Test</h2>
+            <p>Enter your details below to book your G2 test.</p>
+            <% if (message) { %>
+                <p style="color: green;"><%= message %></p>
+            <% } %>
+        </div>
+        <div class="card-container">
+            <div class="form-div">
+                <form id="form-box" action="/g2test/submit" method="POST">
+                    <label class="label" for="firstName">First Name:</label>
+                    <input class="input-field" type="text" id="firstName" name="firstName" value="<%= user.firstName === 'default' ? '' : user.firstName %>" required />
+
+                    <label class="label" for="lastName">Last Name:</label>
+                    <input class="input-field" type="text" id="lastName" name="lastName" value="<%= user.lastName === 'default' ? '' : user.lastName %>" required />
+
+                    <label class="label" for="licenceNumber">Licence Number:</label>
+                    <input class="input-field" type="text" id="licenceNumber" name="licenceNumber" value="<%= user.licenceNumber === 'default' ? '' : user.licenceNumber %>" required />
+
+                    <label class="label" for="age">Age:</label>
+                    <input class="input-field" type="number" id="age" name="age" value="<%= user.age === 0 ? '' : user.age %>" required />
+
+                    <h3 class="section-title">Car Details</h3>
+
+                    <label class="label" for="carMake">Make:</label>
+                    <input class="input-field" type="text" id="carMake" name="carDetails[make]" value="<%= user.carDetails.make === 'default' ? '' : user.carDetails.make %>" required />
+
+                    <label class="label" for="carModel">Model:</label>
+                    <input class="input-field" type="text" id="carModel" name="carDetails[model]" value="<%= user.carDetails.model === 'default' ? '' : user.carDetails.model %>" required />
+
+                    <label class="label" for="carYear">Year:</label>
+                    <input class="input-field" type="number" id="carYear" name="carDetails[year]" value="<%= user.carDetails.year === 0 ? '' : user.carDetails.year %>" required />
+
+                    <label class="label" for="plateNumber">Plate Number:</label>
+                    <input class="input-field" type="text" id="plateNumber" name="carDetails[plateNumber]" value="<%= user.carDetails.plateNumber === 'default' ? '' : user.carDetails.plateNumber %>" required />
+
+                    <button id="submit-btn" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <%- include('layouts/footer'); %>
+    <%- include('layouts/scripts'); %>
+</body>
+</html>
