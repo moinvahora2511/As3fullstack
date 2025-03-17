@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>G Test - DriveTest Booking</title>
+    <link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <%- include('layouts/navbar'); %>
+    <%- include('layouts/header'); %>
+
+    <main class="mb-4">
+        <div class="card-container">
+            <div class="form-container">
+                <h2>Your G Test Information</h2>
+                <% if (user.firstName === 'default') { %>
+                    <p>No data entered yet. Please update your details on the <a href="/g2test">G2 Test page</a>.</p>
+                <% } else { %>
+                    <h3 class="section-title">User Information</h3>
+                    <p><strong>Name:</strong> <%= user.firstName %> <%= user.lastName %></p>
+                    <p><strong>License Number:</strong> <%= user.licenceNumber %></p>
+                    <p><strong>Age:</strong> <%= user.age %></p>
+
+                    <h4 class="sub-title">Car Information</h4>
+                    <form id="car-update-form" action="/g2test/submit" method="POST">
+                        <input type="hidden" name="firstName" value="<%= user.firstName %>">
+                        <input type="hidden" name="lastName" value="<%= user.lastName %>">
+                        <input type="hidden" name="licenceNumber" value="<%= user.licenceNumber %>">
+                        <input type="hidden" name="age" value="<%= user.age %>">
+
+                        <div class="input-group">
+                            <label for="car-make">Make:</label>
+                            <input type="text" name="carDetails[make]" id="car-make" value="<%= user.carDetails.make %>" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="car-model">Model:</label>
+                            <input type="text" name="carDetails[model]" id="car-model" value="<%= user.carDetails.model %>" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="car-year">Year:</label>
+                            <input type="number" name="carDetails[year]" id="car-year" value="<%= user.carDetails.year %>" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="car-plateNumber">Plate Number:</label>
+                            <input type="text" name="carDetails[plateNumber]" id="car-plateNumber" value="<%= user.carDetails.plateNumber %>" required>
+                        </div>
+
+                        <button type="submit" class="action-btn">Update Car Info</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <%- include('layouts/footer'); %>
+    <%- include('layouts/scripts'); %>
+</body>
+</html>
