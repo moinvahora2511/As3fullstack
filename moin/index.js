@@ -121,29 +121,30 @@ app.post('/g2test/submit', requireDriver, async (req, res) => {
     const { firstName, lastName, licenceNumber, age, 'carDetails[make]': make, 'carDetails[model]': model, 'carDetails[year]': year, 'carDetails[plateNumber]': plateNumber } = req.body;
 
     try {
-        const user = await DriveTest.findByIdAndUpdate(
-            req.session.userId,
-            {
-                firstName: firstName || user.firstName,
-                lastName: lastName || user.lastName,
-                licenceNumber: licenceNumber || user.licenceNumber,
-                age: age || user.age,
-                carDetails: {
-                    make: make || user.carDetails.make,
-                    model: model || user.carDetails.model,
-                    year: year || user.carDetails.year,
-                    plateNumber: plateNumber || user.carDetails.plateNumber
-                }
-            },
-            { new: true }  
-        );
+        const user = await DriveTest.findById(req.session.userId);
 
+        // ✅ Check if user exists before modifying its properties
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.licenceNumber = licenceNumber || user.licenceNumber;
+        user.age = age || user.age;
+        user.carDetails.make = make || user.carDetails.make;
+        user.carDetails.model = model || user.carDetails.model;
+        user.carDetails.year = year || user.carDetails.year;
+        user.carDetails.plateNumber = plateNumber || user.carDetails.plateNumber;
+
+        await user.save();
         res.render('g2test', { pageHeading: 'G2 Test', user, message: 'Booking successfully updated!' });
     } catch (err) {
         console.error('Error updating booking:', err);
         res.status(500).send('Error updating booking');
     }
 });
+
 
 
 app.get('/gtest', requireDriver, async (req, res) => {
